@@ -9,8 +9,11 @@ Author: Ridwan Oladipo, MD | AI Specialist
 from datetime import datetime
 import logging
 import time
+from typing import Any, Dict, List
+
 from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel, Field, field_validator
 
 # =========================
 # Logging
@@ -52,6 +55,41 @@ async def add_process_time_header(request: Request, call_next):
     duration = (time.time() - start) * 1000
     logger.info(f"{request.method} {request.url.path} in {duration:.2f} ms")
     return response
+
+# =========================
+# Schemas
+# =========================
+class PatientInput(BaseModel):
+    age:      int   = Field(..., ge=18,  le=101, description="Patient age in years (18-100)")
+    sex:      int   = Field(..., ge=0,   le=1,   description="Sex (0=Female, 1=Male)")
+    cp:       int   = Field(..., ge=0,   le=3,   description="Chest pain type")
+    trestbps: int   = Field(..., ge=80,  le=301, description="Resting blood pressure (80-300 mmHg)")
+    chol:     int   = Field(..., ge=100, le=601, description="Cholesterol (100-600 mg/dl)")
+    fbs:      int   = Field(..., ge=0,   le=1,   description="Fasting blood sugar >120 mg/dl")
+    restecg:  int   = Field(..., ge=0,   le=2,   description="Resting ECG result")
+    thalach:  int   = Field(..., ge=60,  le=221, description="Max heart rate achieved")
+    exang:    int   = Field(..., ge=0,   le=1,   description="Exercise induced angina")
+    oldpeak:  float = Field(..., ge=0.0, le=10.1,description="ST depression")
+    slope:    int   = Field(..., ge=0,   le=2,   description="Slope of ST segment")
+    ca:       int   = Field(..., ge=0,   le=3,   description="Number of major vessels")
+    thal:     int   = Field(..., ge=1,   le=3,   description="Thalassemia status")
+
+    @field_validator("thalach")
+    @classmethod
+    def validate_hr_vs_age(cls, v, info):
+        age = info.data.get("age")
+        if age and v > (220 - age) + 20:
+            raise ValueError(f"Heart rate {v} unusually high for age {age}")
+        return v
+
+    class Config:
+        json_schema_extra = {
+            "example": {
+                "age": 63, "sex": 1, "cp": 0, "trestbps": 145, "chol": 233,
+                "fbs": 1, "restecg": 0, "thalach": 150, "exang": 0,
+                "oldpeak": 2.3, "slope": 0, "ca": 0, "thal": 1
+            }
+        }
 
 # =========================
 # Base route
