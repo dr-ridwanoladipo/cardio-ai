@@ -8,7 +8,7 @@ Author: Ridwan Oladipo, MD | AI Specialist
 import json
 import logging
 import warnings
-from typing import Dict, Any, Tuple
+from typing import Dict, Any, Tuple, List
 
 import joblib
 import pandas as pd
@@ -133,7 +133,6 @@ class HeartDiseasePredictor:
         input_scaled[self.numerical_features] = self.scaler.transform(input_df[self.numerical_features])
         probability = self.model.predict_proba(input_scaled)[0, 1]
 
-        # Classify risk level
         if probability < 0.3:
             risk_class = "Low Risk"
         elif probability < 0.7:
@@ -166,14 +165,37 @@ class HeartDiseasePredictor:
                 f"{', '.join(high_risk_factors[:2]) if high_risk_factors else 'multiple adverse factors'}."
             )
         elif probability >= 0.3:
-            summary = (
-                f"🟧 **Moderate Risk** ({risk_pct:.1f}%): further evaluation recommended."
-            )
+            summary = f"🟧 **Moderate Risk** ({risk_pct:.1f}%): further evaluation recommended."
         else:
-            summary = (
-                f"🟩 **Low Risk** ({risk_pct:.1f}%): maintain heart-healthy lifestyle."
-            )
+            summary = f"🟩 **Low Risk** ({risk_pct:.1f}%): maintain heart-healthy lifestyle."
         return summary
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # SHAP explainability
+    # ───────────────────────────────────────────────────────────────────────────
+    def get_shap_values(self, input_df: pd.DataFrame) -> np.ndarray:
+        """Calculate SHAP values for explanation."""
+        if self.explainer is None:
+            raise ValueError("SHAP explainer not loaded. Call load_artifacts() first.")
+
+        input_scaled = input_df.copy()
+        input_scaled[self.numerical_features] = self.scaler.transform(input_df[self.numerical_features])
+        shap_values = self.explainer.shap_values(input_scaled)
+        return shap_values
+
+    def get_top_features(self, shap_values: np.ndarray, top_n: int = 5) -> List[Dict[str, Any]]:
+        """Return top contributing features with explanations."""
+        feature_contributions = []
+        for i, feature_name in enumerate(self.feature_names):
+            contribution = shap_values[0, i]
+            feature_contributions.append({
+                'feature': feature_name,
+                'shap_value': float(contribution),
+                'abs_contribution': abs(contribution),
+                'impact': 'Increases Risk' if contribution > 0 else 'Decreases Risk'
+            })
+        feature_contributions.sort(key=lambda x: x['abs_contribution'], reverse=True)
+        return feature_contributions[:top_n]
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
