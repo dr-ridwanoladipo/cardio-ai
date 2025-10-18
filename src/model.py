@@ -8,10 +8,11 @@ Author: Ridwan Oladipo, MD | AI Specialist
 import json
 import logging
 import warnings
-from typing import Dict, Any
+from typing import Dict, Any, Tuple
 
 import joblib
 import pandas as pd
+import numpy as np
 
 warnings.filterwarnings("ignore")
 
@@ -119,6 +120,60 @@ class HeartDiseasePredictor:
         enhanced_patient['cp_exang_interaction'] = patient_dict['cp'] * patient_dict['exang']
 
         return enhanced_patient
+
+    # ───────────────────────────────────────────────────────────────────────────
+    # Prediction & clinical summary
+    # ───────────────────────────────────────────────────────────────────────────
+    def predict_proba(self, input_df: pd.DataFrame) -> Tuple[float, str, str]:
+        """Predict probability and return risk classification + summary."""
+        if self.model is None:
+            raise ValueError("Model not loaded. Call load_artifacts() first.")
+
+        input_scaled = input_df.copy()
+        input_scaled[self.numerical_features] = self.scaler.transform(input_df[self.numerical_features])
+        probability = self.model.predict_proba(input_scaled)[0, 1]
+
+        # Classify risk level
+        if probability < 0.3:
+            risk_class = "Low Risk"
+        elif probability < 0.7:
+            risk_class = "Moderate Risk"
+        else:
+            risk_class = "High Risk"
+
+        clinical_summary = self._generate_clinical_summary(probability, input_df.iloc[0])
+        return probability, risk_class, clinical_summary
+
+    def _generate_clinical_summary(self, probability: float, patient_data: pd.Series) -> str:
+        """Generate a clinical summary based on prediction and key features."""
+        risk_pct = probability * 100
+        high_risk_factors = []
+
+        if patient_data['ca'] >= 2:
+            high_risk_factors.append("multi-vessel coronary disease")
+        if patient_data['thal'] == 3:
+            high_risk_factors.append("reversible perfusion defect")
+        if patient_data['exang'] == 1:
+            high_risk_factors.append("exercise-induced angina")
+        if patient_data['slope'] == 2:
+            high_risk_factors.append("downsloping ST segment")
+        if patient_data['cp'] == 0:
+            high_risk_factors.append("typical angina")
+
+        if probability >= 0.7:
+            summary = (
+                f"🟥 **High Risk** ({risk_pct:.1f}%): likely driven by "
+                f"{', '.join(high_risk_factors[:2]) if high_risk_factors else 'multiple adverse factors'}."
+            )
+        elif probability >= 0.3:
+            summary = (
+                f"🟧 **Moderate Risk** ({risk_pct:.1f}%): further evaluation recommended."
+            )
+        else:
+            summary = (
+                f"🟩 **Low Risk** ({risk_pct:.1f}%): maintain heart-healthy lifestyle."
+            )
+        return summary
 
 
 # ═══════════════════════════════════════════════════════════════════════════════
