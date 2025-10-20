@@ -21,6 +21,7 @@ data/heartdisease_processed.csv
 # ───────────────────────────────────────────────
 outputs/*.log
 test/
+utility/
 
 # ───────────────────────────────────────────────
 # Jupyter Checkpoints
