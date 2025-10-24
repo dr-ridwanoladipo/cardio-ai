@@ -349,3 +349,27 @@ def check_api_health():
         return None
     except Exception:
         return None
+
+
+# ===============================
+# SAMPLE PATIENT DATA
+# ===============================
+def get_sample_patients():
+    """Return sample patient data for demonstration"""
+    return {
+        "Patient A": {
+            "age": 67, "sex": 1, "cp": 0, "trestbps": 160, "chol": 286,
+            "fbs": 0, "restecg": 0, "thalach": 108, "exang": 1,
+            "oldpeak": 1.5, "slope": 1, "ca": 3, "thal": 2
+        },
+        "Patient B": {
+            "age": 29, "sex": 1, "cp": 1, "trestbps": 130, "chol": 204,
+            "fbs": 0, "restecg": 0, "thalach": 202, "exang": 0,
+            "oldpeak": 0.0, "slope": 2, "ca": 0, "thal": 2
+        },
+        "Patient C": {
+            "age": 54, "sex": 0, "cp": 2, "trestbps": 108, "chol": 267,
+            "fbs": 0, "restecg": 1, "thalach": 167, "exang": 0,
+            "oldpeak": 0.0, "slope": 2, "ca": 0, "thal": 2
+        }
+    }

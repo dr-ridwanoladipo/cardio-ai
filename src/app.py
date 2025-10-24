@@ -9,7 +9,7 @@ Author: Ridwan Oladipo, MD | AI Specialist
 
 # ── Imports ────────────────────────────────────────────────────────────────────
 import streamlit as st
-from src.app_helpers import load_custom_css, check_api_health
+from src.app_helpers import load_custom_css, check_api_health, get_sample_patients
 
 # ================ 🛠 SIDEBAR TOGGLE ================
 if 'sidebar_state' not in st.session_state:
@@ -66,7 +66,109 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    st.success("✅ API connected and model verified successfully.")
+    # ---------- 🩺 PATIENT INPUT PANEL ----------
+    st.markdown("## 🩺 Patient Input Panel")
+
+    with st.container():
+        # Sidebar for sample data
+        with st.sidebar:
+            st.markdown("### 🎯 Quick Demo")
+            sample_patients = get_sample_patients()
+            selected_sample = st.selectbox(
+                "Load Sample Patient:",
+                ["Custom Input"] + list(sample_patients.keys())
+            )
+
+            if st.button("🔄 Load Sample Data"):
+                if selected_sample != "Custom Input":
+                    for key, value in sample_patients[selected_sample].items():
+                        st.session_state[key] = value
+                    st.rerun()
+
+            st.markdown("---")
+            st.markdown("### ℹ️ About This Tool")
+            st.markdown("""
+            This AI system predicts coronary artery disease risk using:
+            - **XGBoost** machine learning model  
+            - **SHAP** explainable AI  
+            - **Clinical guidelines** integration  
+            - **Population comparisons**
+            """)
+
+        # Main input form
+        col1, col2 = st.columns(2)
+
+        with col1:
+            st.markdown("### 👤 Demographics & Vitals")
+
+            age = st.slider("Age (years)", 18, 100,
+                            st.session_state.get('age', 54),
+                            help="Patient's age in years")
+
+            sex = st.selectbox("Sex",
+                               options=[0, 1],
+                               format_func=lambda x: "Female" if x == 0 else "Male",
+                               index=st.session_state.get('sex', 1))
+
+            trestbps = st.slider("Resting Blood Pressure (mmHg)", 80, 300,
+                                 st.session_state.get('trestbps', 132),
+                                 help="Resting blood pressure measurement")
+
+            chol = st.slider("Cholesterol (mg/dl)", 100, 600,
+                             st.session_state.get('chol', 246),
+                             help="Serum cholesterol level")
+
+            fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl",
+                               options=[0, 1],
+                               format_func=lambda x: "No" if x == 0 else "Yes",
+                               index=st.session_state.get('fbs', 0))
+
+            thalach = st.slider("Maximum Heart Rate", 60, 220,
+                                st.session_state.get('thalach', 150),
+                                help="Maximum heart rate achieved during exercise")
+
+        with col2:
+            st.markdown("### ❤️ Cardiac Assessment")
+
+            cp = st.selectbox("Chest Pain Type",
+                              options=[0, 1, 2, 3],
+                              format_func=lambda x: ["Typical Angina", "Atypical Angina",
+                                                     "Non-anginal Pain", "Asymptomatic"][x],
+                              index=st.session_state.get('cp', 0))
+
+            restecg = st.selectbox("Resting ECG",
+                                   options=[0, 1, 2],
+                                   format_func=lambda x: ["Normal", "ST-T Abnormality",
+                                                          "LV Hypertrophy"][x],
+                                   index=st.session_state.get('restecg', 0))
+
+            exang = st.selectbox("Exercise Induced Angina",
+                                 options=[0, 1],
+                                 format_func=lambda x: "No" if x == 0 else "Yes",
+                                 index=st.session_state.get('exang', 0))
+
+            oldpeak = st.slider("ST Depression", 0.0, 10.0,
+                                st.session_state.get('oldpeak', 1.0),
+                                step=0.1,
+                                help="ST depression induced by exercise")
+
+            slope = st.selectbox("ST Slope",
+                                 options=[0, 1, 2],
+                                 format_func=lambda x: ["Upsloping", "Flat", "Downsloping"][x],
+                                 index=st.session_state.get('slope', 1))
+
+            ca = st.selectbox("Major Vessels (Angiography)",
+                              options=[0, 1, 2, 3],
+                              format_func=lambda x: f"{x} vessels",
+                              index=st.session_state.get('ca', 0),
+                              help="Number of major coronary vessels with significant stenosis")
+
+            thal = st.selectbox("Thalassemia",
+                                options=[1, 2, 3],
+                                format_func=lambda x: ["Normal", "Fixed Defect", "Reversible Defect"][x - 1],
+                                index=st.session_state.get('thal', 2) - 1)
+
+    st.success("✅ Patient input section active and ready for predictions.")
 
 # ================ 🚀 ENTRY POINT ================
 if __name__ == "__main__":
