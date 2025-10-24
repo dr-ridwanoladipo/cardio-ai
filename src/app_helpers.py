@@ -528,6 +528,21 @@ def get_sample_patients():
 # ===============================
 # 🔧 UTILITY FUNCTIONS
 # ===============================
+def display_feature_tooltips():
+    """Display clinical feature tooltips"""
+    return {
+        "Age": "Cardiovascular risk increases with age, especially after 65",
+        "Sex": "Males generally have higher CAD risk before age 65",
+        "Chest Pain": "Typical angina suggests CAD, but atypical presentations are common",
+        "Blood Pressure": "Hypertension damages arteries and accelerates atherosclerosis",
+        "Cholesterol": "High LDL cholesterol contributes to plaque formation",
+        "Exercise ECG": "ST depression during exercise indicates cardiac ischemia",
+        "Heart Rate": "Inability to achieve target heart rate may indicate cardiac dysfunction",
+        "Coronary Vessels": "Number of significantly blocked arteries",
+        "Thalassemia": "Nuclear stress test showing perfusion defects"
+    }
+
+
 def validate_patient_data(data: Dict) -> List[str]:
     """Validate patient data for clinical plausibility"""
     warnings_list = []
