@@ -19,26 +19,11 @@ from src.app_helpers import (
     get_sample_patients, validate_patient_data, API_BASE_URL
 )
 
-# ================ 🛠 SIDEBAR TOGGLE ================
-if 'sidebar_state' not in st.session_state:
-    st.session_state.sidebar_state = 'expanded'
-
+# ================ 🛠 PAGE CONFIGURATION ================
 st.set_page_config(
     page_title="Clinical Heart Disease AI",
     page_icon="🩺",
     layout="wide",
-    initial_sidebar_state=st.session_state.sidebar_state
-)
-
-if st.button("🩺", help="Toggle sidebar"):
-    st.session_state.sidebar_state = (
-        'collapsed' if st.session_state.sidebar_state == 'expanded' else 'expanded'
-    )
-    st.rerun()
-
-st.markdown(
-    '<div style="font-size:0.75rem; color:#6b7280; margin-top:-10px;">Menu</div>',
-    unsafe_allow_html=True
 )
 
 # ================ 🔧 PAGE CONFIGURATION ================
@@ -78,6 +63,7 @@ def main():
 
     # ---------- 🩺 PATIENT INPUT PANEL ----------
     st.markdown("## 🩺 Patient Input Panel")
+    st.markdown("---")
 
     with st.container():
         # Sidebar for sample data
@@ -105,6 +91,7 @@ def main():
             - **Population comparisons**
             """)
 
+            st.markdown("---")
             st.markdown("### 📊 Model Performance")
             if health_status:
                 st.metric("ROC-AUC", "0.91")
@@ -144,7 +131,8 @@ def main():
                                 help="Maximum heart rate achieved during exercise")
 
         with col2:
-            st.markdown("### ❤️ Cardiac Assessment")
+            st.markdown('<hr class="mobile-divider">', unsafe_allow_html=True)
+            st.markdown("### 🫀 Cardiac Assessment")
 
             cp = st.selectbox("Chest Pain Type",
                               options=[0, 1, 2, 3],
@@ -212,6 +200,7 @@ def main():
             st.error(f"❌ {pred_error}")
             return
 
+        st.markdown("---")
         st.markdown("## 📊 Risk Assessment")
         col1a, col1b = st.columns([1, 1])
 
@@ -250,16 +239,18 @@ def main():
                 col_b.metric("Specificity", f"{metrics_data['specificity']:.1%}")
 
         # ---------- CLINICAL SUPPORT ----------
+        st.markdown("---")
         st.markdown("## ⚕️ Clinical Decision Support")
         summary_html = markdown(prediction_data['clinical_summary'])
         st.markdown(f"""
         <div class="clinical-summary">
-            <h4>🩺 Clinical Interpretation & Recommendations</h4>
+            <h4> Clinical Interpretation & Recommendations</h4>
             {summary_html}
         </div>
         """, unsafe_allow_html=True)
 
         if positions_data and not pos_error:
+            st.markdown("---")
             st.markdown("### 📋 Clinical Guidelines Assessment")
             guidelines = positions_data['guideline_categories']
 
@@ -286,6 +277,7 @@ def main():
 
         # ---------- SHAP DASHBOARD ----------
         if shap_data and not shap_error:
+            st.markdown("---")
             st.markdown("## 🧠 Explainable AI Dashboard")
             s_col1, s_col2 = st.columns([2, 1])
 
@@ -294,6 +286,7 @@ def main():
                 st.plotly_chart(shap_fig, use_container_width=True)
 
             with s_col2:
+                st.markdown("---")
                 st.markdown("### 🎯 Top Risk Drivers")
                 for feature in shap_data['top_features'][:5]:
                     impact_class = "feature-increase" if feature['shap_value'] > 0 else "feature-decrease"
@@ -306,6 +299,7 @@ def main():
                     """, unsafe_allow_html=True)
 
             if positions_data and not pos_error:
+                st.markdown("---")
                 st.markdown("### 📈 Population Comparison")
                 pcol1, pcol2 = st.columns([1, 1])
 
@@ -385,6 +379,8 @@ def main():
         "All medical decisions should be made in consultation with qualified healthcare providers. "
         "Predictions are based on statistical patterns and should be interpreted within the full clinical context."
     )
+
+    st.markdown("---")
 
     fcol1, fcol2, fcol3 = st.columns(3)
 

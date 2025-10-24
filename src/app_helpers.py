@@ -43,20 +43,20 @@ def load_custom_css():
 
     /* Global styling */
     .main .block-container {
-        padding-top: 0rem !important;
+        padding-top: 1.5rem !important;
         padding-bottom: 2rem;
         max-width: 1200px;
     }
 
     /* Main content area */
     div[data-testid="stMainBlockContainer"], section[data-testid="stMain"] {
-        padding-top: 0.5rem !important;
+        padding-top: 1.4rem !important;
     }
 
     /* Header styling */
     .medical-header {
         background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-        padding: 2rem;
+        padding: 2.5rem 2rem;
         border-radius: 15px;
         color: white;
         text-align: center;
@@ -76,16 +76,6 @@ def load_custom_css():
         font-size: 1.1rem;
         opacity: 0.9;
         margin: 0;
-    }
-
-    /* Risk gauge container */
-    .risk-gauge-container {
-        background: white;
-        border-radius: 20px;
-        padding: 2rem;
-        box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
-        border: 1px solid #e0e7ff;
-        margin: 1rem 0;
     }
 
     /* Risk level styling */
@@ -238,10 +228,8 @@ def load_custom_css():
         margin-top: 3rem;
     }
 
-    /* Hide Streamlit default elements */
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* Hide Streamlit chrome */
+    #MainMenu, footer, .stAppDeployButton {display: none !important;}
 
     /* Custom scrollbar */
     ::-webkit-scrollbar {
@@ -262,33 +250,6 @@ def load_custom_css():
         background: #1d4ed8;
     }
 
-    /* Expander header styling */
-    .streamlit-expander .streamlit-expanderHeader {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        border-radius: 12px !important;
-        padding: 1rem !important;
-        border: none !important;
-        font-weight: 600 !important;
-        box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3) !important;
-    }
-
-    /* Alternative expander targeting */
-    details[open] > summary,
-    details > summary {
-        background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%) !important;
-        color: white !important;
-        padding: 1rem !important;
-        border-radius: 12px !important;
-        border: none !important;
-        font-weight: 600 !important;
-        list-style: none !important;
-    }
-
-    /* Hide default arrow */
-    details > summary::-webkit-details-marker {
-        display: none;
-    }
 
     /* Content styling */
     details[open] {
@@ -296,11 +257,22 @@ def load_custom_css():
         border-radius: 12px !important;
         overflow: hidden !important;
     }
+        
+    /* Show divider on mobile */
+    .mobile-divider {
+        display: none;
+    }
 
     /* Mobile responsive */
     @media (max-width: 768px) {
         .stColumns > div {
             text-align: center !important;
+        }
+                 
+        .mobile-divider {
+            display: block;
+            border-top: 2px solid #e5e7eb;
+            margin: 1.5rem 0;
         }
 
         .stColumns h3,
