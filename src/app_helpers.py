@@ -523,3 +523,26 @@ def get_sample_patients():
             "oldpeak": 0.0, "slope": 2, "ca": 0, "thal": 2
         }
     }
+
+
+# ===============================
+# 🔧 UTILITY FUNCTIONS
+# ===============================
+def validate_patient_data(data: Dict) -> List[str]:
+    """Validate patient data for clinical plausibility"""
+    warnings_list = []
+
+    expected_max_hr = 220 - data['age']
+    if data['thalach'] > expected_max_hr + 20:
+        warnings_list.append(f"Heart rate ({data['thalach']}) unusually high for age {data['age']}")
+
+    if data['trestbps'] > 180:
+        warnings_list.append("Severe hypertension detected - consider immediate medical attention")
+
+    if data['chol'] > 400:
+        warnings_list.append("Extremely high cholesterol - may indicate familial hypercholesterolemia")
+
+    if data['oldpeak'] > 4:
+        warnings_list.append("Severe ST depression - highly suggestive of significant CAD")
+
+    return warnings_list

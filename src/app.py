@@ -13,7 +13,7 @@ from markdown import markdown
 from src.app_helpers import (
     load_custom_css, check_api_health, get_sample_patients,
     call_api_endpoint, create_risk_gauge, create_shap_waterfall,
-    create_population_comparison
+    create_population_comparison, validate_patient_data
 )
 
 # ================ 🛠 SIDEBAR TOGGLE ================
@@ -147,6 +147,13 @@ def main():
     for k, v in patient_data.items():
         st.session_state[k] = v
 
+    # ---------- ⚕️ CLINICAL VALIDATION ----------
+    warnings = validate_patient_data(patient_data)
+    if warnings:
+        st.warning("⚠️ Clinical Validation Alerts:")
+        for w in warnings:
+            st.markdown(f"- {w}")
+
     st.markdown("---")
 
     col1, col2, col3 = st.columns([1, 2, 1])
@@ -179,7 +186,6 @@ def main():
             box = "risk-low" if "Low" in risk_class else "risk-moderate" if "Moderate" in risk_class else "risk-high"
             st.markdown(f'<div class="{box}">{risk_class}<br>{probability:.1%} Risk</div>', unsafe_allow_html=True)
 
-        # ---------- ⚕️ CLINICAL SUMMARY ----------
         summary_html = markdown(prediction_data['clinical_summary'])
         st.markdown(f"""
         <div class="clinical-summary">
@@ -188,7 +194,6 @@ def main():
         </div>
         """, unsafe_allow_html=True)
 
-        # ---------- 🧠 SHAP EXPLAINABILITY ----------
         if shap_data and not shap_error:
             st.markdown("## 🧠 Explainable AI Dashboard")
             s_col1, s_col2 = st.columns([2, 1])
@@ -209,7 +214,6 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
 
-        # ---------- 📈 POPULATION COMPARISON ----------
         if positions_data and not pos_error:
             st.markdown("### 📈 Population Comparison")
             pcol1, pcol2 = st.columns([1, 1])
