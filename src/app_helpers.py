@@ -334,3 +334,18 @@ def load_custom_css():
 
     </style>
     """, unsafe_allow_html=True)
+
+
+# ===============================
+# API COMMUNICATION FUNCTIONS
+# ===============================
+@st.cache_data(ttl=300)
+def check_api_health():
+    """Check if API is healthy and model is loaded"""
+    try:
+        response = requests.get(f"{API_BASE_URL}/health", timeout=5)
+        if response.status_code == 200:
+            return response.json()
+        return None
+    except Exception:
+        return None

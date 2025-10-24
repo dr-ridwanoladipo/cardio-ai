@@ -9,7 +9,7 @@ Author: Ridwan Oladipo, MD | AI Specialist
 
 # ── Imports ────────────────────────────────────────────────────────────────────
 import streamlit as st
-from src.app_helpers import load_custom_css
+from src.app_helpers import load_custom_css, check_api_health
 
 # ================ 🛠 SIDEBAR TOGGLE ================
 if 'sidebar_state' not in st.session_state:
@@ -47,7 +47,26 @@ def main():
     </div>
     """, unsafe_allow_html=True)
 
-    st.success("✅ App initialized successfully with sidebar toggle and layout ready.")
+    # ---------- 🔧 API HEALTH CHECK ----------
+    health_status = check_api_health()
+
+    if not health_status:
+        st.error("🚨 **API Connection Failed** - Please ensure the FastAPI service is running on localhost:8000")
+        st.code("uvicorn src.api:app --reload", language="bash")
+        st.stop()
+
+    if not health_status.get('model_loaded', False):
+        st.error("🚨 **Model Not Loaded** - Please check API logs")
+        st.stop()
+
+    st.markdown("""
+    <div style="background-color: #d4edda; border: 1px solid #c3e6cb; color: #155724; 
+               padding: 0.5rem 1rem; margin-bottom: 1rem; border-radius: 0.375rem; font-size: 0.85rem;">
+    ✅ <strong>System Online</strong> - Model loaded and ready for predictions
+    </div>
+    """, unsafe_allow_html=True)
+
+    st.success("✅ API connected and model verified successfully.")
 
 # ================ 🚀 ENTRY POINT ================
 if __name__ == "__main__":
