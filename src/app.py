@@ -9,7 +9,10 @@ Author: Ridwan Oladipo, MD | AI Specialist
 
 # ── Imports ────────────────────────────────────────────────────────────────────
 import streamlit as st
-from src.app_helpers import load_custom_css, check_api_health, get_sample_patients
+from src.app_helpers import (
+    load_custom_css, check_api_health, get_sample_patients,
+    call_api_endpoint, create_risk_gauge
+)
 
 # ================ 🛠 SIDEBAR TOGGLE ================
 if 'sidebar_state' not in st.session_state:
@@ -89,10 +92,9 @@ def main():
             st.markdown("### ℹ️ About This Tool")
             st.markdown("""
             This AI system predicts coronary artery disease risk using:
-            - **XGBoost** machine learning model  
+            - **XGBoost** model  
             - **SHAP** explainable AI  
-            - **Clinical guidelines** integration  
-            - **Population comparisons**
+            - **Clinical guidelines** integration
             """)
 
         # Main input form
@@ -102,30 +104,20 @@ def main():
             st.markdown("### 👤 Demographics & Vitals")
 
             age = st.slider("Age (years)", 18, 100,
-                            st.session_state.get('age', 54),
-                            help="Patient's age in years")
-
-            sex = st.selectbox("Sex",
-                               options=[0, 1],
+                            st.session_state.get('age', 54))
+            sex = st.selectbox("Sex", options=[0, 1],
                                format_func=lambda x: "Female" if x == 0 else "Male",
                                index=st.session_state.get('sex', 1))
-
             trestbps = st.slider("Resting Blood Pressure (mmHg)", 80, 300,
-                                 st.session_state.get('trestbps', 132),
-                                 help="Resting blood pressure measurement")
-
+                                 st.session_state.get('trestbps', 132))
             chol = st.slider("Cholesterol (mg/dl)", 100, 600,
-                             st.session_state.get('chol', 246),
-                             help="Serum cholesterol level")
-
+                             st.session_state.get('chol', 246))
             fbs = st.selectbox("Fasting Blood Sugar > 120 mg/dl",
                                options=[0, 1],
                                format_func=lambda x: "No" if x == 0 else "Yes",
                                index=st.session_state.get('fbs', 0))
-
             thalach = st.slider("Maximum Heart Rate", 60, 220,
-                                st.session_state.get('thalach', 150),
-                                help="Maximum heart rate achieved during exercise")
+                                st.session_state.get('thalach', 150))
 
         with col2:
             st.markdown("### ❤️ Cardiac Assessment")
@@ -135,40 +127,75 @@ def main():
                               format_func=lambda x: ["Typical Angina", "Atypical Angina",
                                                      "Non-anginal Pain", "Asymptomatic"][x],
                               index=st.session_state.get('cp', 0))
-
             restecg = st.selectbox("Resting ECG",
                                    options=[0, 1, 2],
                                    format_func=lambda x: ["Normal", "ST-T Abnormality",
                                                           "LV Hypertrophy"][x],
                                    index=st.session_state.get('restecg', 0))
-
             exang = st.selectbox("Exercise Induced Angina",
                                  options=[0, 1],
                                  format_func=lambda x: "No" if x == 0 else "Yes",
                                  index=st.session_state.get('exang', 0))
-
             oldpeak = st.slider("ST Depression", 0.0, 10.0,
                                 st.session_state.get('oldpeak', 1.0),
-                                step=0.1,
-                                help="ST depression induced by exercise")
-
+                                step=0.1)
             slope = st.selectbox("ST Slope",
                                  options=[0, 1, 2],
                                  format_func=lambda x: ["Upsloping", "Flat", "Downsloping"][x],
                                  index=st.session_state.get('slope', 1))
-
             ca = st.selectbox("Major Vessels (Angiography)",
                               options=[0, 1, 2, 3],
                               format_func=lambda x: f"{x} vessels",
-                              index=st.session_state.get('ca', 0),
-                              help="Number of major coronary vessels with significant stenosis")
-
+                              index=st.session_state.get('ca', 0))
             thal = st.selectbox("Thalassemia",
                                 options=[1, 2, 3],
                                 format_func=lambda x: ["Normal", "Fixed Defect", "Reversible Defect"][x - 1],
                                 index=st.session_state.get('thal', 2) - 1)
 
-    st.success("✅ Patient input section active and ready for predictions.")
+    # ---------- 🔮 PREDICTION BUTTON ----------
+    patient_data = {
+        'age': age, 'sex': sex, 'cp': cp, 'trestbps': trestbps, 'chol': chol,
+        'fbs': fbs, 'restecg': restecg, 'thalach': thalach, 'exang': exang,
+        'oldpeak': oldpeak, 'slope': slope, 'ca': ca, 'thal': thal
+    }
+    for k, v in patient_data.items():
+        st.session_state[k] = v
+
+    st.markdown("---")
+
+    col1, col2, col3 = st.columns([1, 2, 1])
+    with col2:
+        predict_button = st.button("🔮 **Analyze Cardiovascular Risk**",
+                                   use_container_width=True, type="primary")
+
+    if predict_button:
+        with st.spinner("🧠 Analyzing patient data..."):
+            prediction_data, pred_error = call_api_endpoint("predict", patient_data)
+
+        if pred_error:
+            st.error(f"❌ {pred_error}")
+            return
+
+        st.markdown("## 📊 Risk Assessment")
+        col1a, col1b = st.columns([1, 1])
+
+        with col1a:
+            st.markdown('<div class="risk-gauge-container">', unsafe_allow_html=True)
+            risk_fig = create_risk_gauge(prediction_data['probability'], prediction_data['risk_class'])
+            st.plotly_chart(risk_fig, use_container_width=True)
+            st.markdown('</div>', unsafe_allow_html=True)
+
+        with col1b:
+            risk_class = prediction_data['risk_class']
+            probability = prediction_data['probability']
+            if "Low" in risk_class:
+                box = "risk-low"
+            elif "Moderate" in risk_class:
+                box = "risk-moderate"
+            else:
+                box = "risk-high"
+
+            st.markdown(f'<div class="{box}">{risk_class}<br>{probability:.1%} Risk</div>', unsafe_allow_html=True)
 
 # ================ 🚀 ENTRY POINT ================
 if __name__ == "__main__":

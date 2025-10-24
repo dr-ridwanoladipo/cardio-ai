@@ -351,6 +351,87 @@ def check_api_health():
         return None
 
 
+def call_api_endpoint(endpoint: str, data: Dict = None):
+    """Make API call with error handling"""
+    try:
+        if data:
+            response = requests.post(f"{API_BASE_URL}/{endpoint}",
+                                     json=data, timeout=TIMEOUT)
+        else:
+            response = requests.get(f"{API_BASE_URL}/{endpoint}",
+                                    timeout=TIMEOUT)
+
+        if response.status_code == 200:
+            return response.json(), None
+        else:
+            try:
+                detail = response.json().get("detail", None)
+                if isinstance(detail, list):
+                    error_msgs = []
+                    for item in detail:
+                        loc = item.get("loc", ["field"])[-1]
+                        msg = item.get("msg", "")
+                        error_msgs.append(f"{loc}: {msg}")
+                    clean_msg = " | ".join(error_msgs)
+                    return None, f"Validation error: {clean_msg}"
+                else:
+                    return None, f"API Error: {detail or response.status_code}"
+            except:
+                return None, f"API Error: {response.status_code}"
+    except requests.exceptions.Timeout:
+        return None, "API timeout - please try again"
+    except requests.exceptions.ConnectionError:
+        return None, "Cannot connect to API - check if service is running"
+    except Exception as e:
+        return None, f"Unexpected error: {str(e)}"
+
+
+# ===============================
+# VISUALIZATION FUNCTIONS
+# ===============================
+def create_risk_gauge(probability: float, risk_class: str):
+    """Create risk assessment gauge"""
+    color_map = {
+        "Low Risk": "#10b981",
+        "Moderate Risk": "#f59e0b",
+        "High Risk": "#ef4444"
+    }
+
+    fig = go.Figure(go.Indicator(
+        mode="gauge+number+delta",
+        value=probability * 100,
+        domain={'x': [0, 1], 'y': [0, 1]},
+        title={'text': f"<b>{risk_class}</b><br><span style='font-size:0.8em'>Cardiovascular Risk Assessment</span>"},
+        delta={'reference': 50, 'position': "top"},
+        gauge={
+            'axis': {'range': [None, 100], 'tickwidth': 1, 'tickcolor': "#1f2937"},
+            'bar': {'color': color_map.get(risk_class, "#6b7280")},
+            'bgcolor': "white",
+            'borderwidth': 2,
+            'bordercolor': "#e5e7eb",
+            'steps': [
+                {'range': [0, 30], 'color': "#dcfce7"},
+                {'range': [30, 70], 'color': "#fef3c7"},
+                {'range': [70, 100], 'color': "#fee2e2"}
+            ],
+            'threshold': {
+                'line': {'color': "#1f2937", 'width': 4},
+                'thickness': 0.75,
+                'value': probability * 100
+            }
+        }
+    ))
+
+    fig.update_layout(
+        height=400,
+        font={'color': "#1f2937", 'family': "Inter"},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)"
+    )
+
+    return fig
+
+
 # ===============================
 # SAMPLE PATIENT DATA
 # ===============================
