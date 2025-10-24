@@ -12,7 +12,8 @@ import streamlit as st
 from markdown import markdown
 from src.app_helpers import (
     load_custom_css, check_api_health, get_sample_patients,
-    call_api_endpoint, create_risk_gauge, create_shap_waterfall
+    call_api_endpoint, create_risk_gauge, create_shap_waterfall,
+    create_population_comparison
 )
 
 # ================ 🛠 SIDEBAR TOGGLE ================
@@ -157,6 +158,7 @@ def main():
         with st.spinner("🧠 Analyzing patient data..."):
             prediction_data, pred_error = call_api_endpoint("predict", patient_data)
             shap_data, shap_error = call_api_endpoint("shap", patient_data)
+            positions_data, pos_error = call_api_endpoint("positions", patient_data)
 
         if pred_error:
             st.error(f"❌ {pred_error}")
@@ -176,6 +178,15 @@ def main():
             probability = prediction_data['probability']
             box = "risk-low" if "Low" in risk_class else "risk-moderate" if "Moderate" in risk_class else "risk-high"
             st.markdown(f'<div class="{box}">{risk_class}<br>{probability:.1%} Risk</div>', unsafe_allow_html=True)
+
+        # ---------- ⚕️ CLINICAL SUMMARY ----------
+        summary_html = markdown(prediction_data['clinical_summary'])
+        st.markdown(f"""
+        <div class="clinical-summary">
+            <h4>🩺 Clinical Interpretation & Recommendations</h4>
+            {summary_html}
+        </div>
+        """, unsafe_allow_html=True)
 
         # ---------- 🧠 SHAP EXPLAINABILITY ----------
         if shap_data and not shap_error:
@@ -198,14 +209,21 @@ def main():
                     </div>
                     """, unsafe_allow_html=True)
 
-        # ---------- ⚕️ CLINICAL SUMMARY ----------
-        summary_html = markdown(prediction_data['clinical_summary'])
-        st.markdown(f"""
-        <div class="clinical-summary">
-            <h4>🩺 Clinical Interpretation & Recommendations</h4>
-            {summary_html}
-        </div>
-        """, unsafe_allow_html=True)
+        # ---------- 📈 POPULATION COMPARISON ----------
+        if positions_data and not pos_error:
+            st.markdown("### 📈 Population Comparison")
+            pcol1, pcol2 = st.columns([1, 1])
+
+            with pcol1:
+                pop_fig = create_population_comparison(positions_data)
+                st.plotly_chart(pop_fig, use_container_width=True)
+
+            with pcol2:
+                st.markdown("#### 📊 Percentile Rankings")
+                feature_positions = positions_data['feature_positions']
+                for feature, data in feature_positions.items():
+                    if feature in ['age', 'trestbps', 'chol', 'thalach']:
+                        st.write(f"**{feature.replace('_', ' ').title()}:** {data['comparison']}")
 
 # ================ 🚀 ENTRY POINT ================
 if __name__ == "__main__":

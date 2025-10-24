@@ -467,6 +467,40 @@ def create_shap_waterfall(shap_data: Dict):
     return fig
 
 
+def create_population_comparison(positions_data: Dict):
+    """Create population comparison visualization"""
+    feature_positions = positions_data['feature_positions']
+
+    features, percentiles = [], []
+    for feature, data in feature_positions.items():
+        if feature in ['age', 'trestbps', 'chol', 'thalach', 'hr_achievement']:
+            features.append(feature.replace('_', ' ').title())
+            percentiles.append(data['percentile'])
+
+    fig = go.Figure(data=go.Scatterpolar(
+        r=percentiles,
+        theta=features,
+        fill='toself',
+        line=dict(color='#3b82f6', width=3),
+        fillcolor='rgba(59, 130, 246, 0.1)',
+        marker=dict(size=8, color='#1d4ed8')
+    ))
+
+    fig.update_layout(
+        polar=dict(
+            radialaxis=dict(visible=True, range=[0, 100],
+                            tickvals=[25, 50, 75, 100],
+                            ticktext=['25th', '50th', '75th', '100th'])
+        ),
+        title="<b>Patient Position vs. Population</b><br><sub>Percentile rankings across key metrics</sub>",
+        height=400,
+        font={'family': "Inter"},
+        paper_bgcolor="rgba(0,0,0,0)"
+    )
+
+    return fig
+
+
 # ===============================
 # SAMPLE PATIENT DATA
 # ===============================
