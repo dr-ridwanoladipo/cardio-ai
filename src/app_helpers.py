@@ -432,6 +432,41 @@ def create_risk_gauge(probability: float, risk_class: str):
     return fig
 
 
+def create_shap_waterfall(shap_data: Dict):
+    """Create SHAP waterfall plot for feature contributions"""
+    top_features = shap_data['top_features'][:8]
+
+    features = [f['feature'] for f in top_features]
+    values = [f['shap_value'] for f in top_features]
+    colors = ['#ef4444' if v > 0 else '#10b981' for v in values]
+
+    fig = go.Figure(go.Waterfall(
+        name="SHAP Values",
+        orientation="v",
+        measure=["relative"] * len(features),
+        x=features,
+        textposition="outside",
+        text=[f"{v:+.3f}" for v in values],
+        y=values,
+        connector={"line": {"color": "#64748b"}},
+        increasing={"marker": {"color": "#ef4444"}},
+        decreasing={"marker": {"color": "#10b981"}},
+    ))
+
+    fig.update_layout(
+        title="<b>Feature Contributions to Risk Prediction</b><br><sub>Impact of each clinical factor</sub>",
+        xaxis_title="Clinical Features",
+        yaxis_title="SHAP Value (Impact on Risk)",
+        height=500,
+        font={'family': "Inter"},
+        paper_bgcolor="rgba(0,0,0,0)",
+        plot_bgcolor="rgba(0,0,0,0)",
+        xaxis={'tickangle': 45}
+    )
+
+    return fig
+
+
 # ===============================
 # SAMPLE PATIENT DATA
 # ===============================
