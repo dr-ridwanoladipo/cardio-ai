@@ -509,7 +509,7 @@ def validate_patient_data(data: Dict) -> List[str]:
     """Validate patient data for clinical plausibility"""
     warnings_list = []
 
-    expected_max_hr = 220 - data['age']
+    expected_max_hr = 220 - data.get('age', 0)
     if data['thalach'] > expected_max_hr + 20:
         warnings_list.append(f"Heart rate ({data['thalach']}) unusually high for age {data['age']}")
 

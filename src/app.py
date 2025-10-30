@@ -189,6 +189,13 @@ def main():
                                    use_container_width=True, type="primary")
 
     if predict_button:
+        # ---------- ⚠️ DATA VALIDATION WARNINGS ----------
+        warnings = validate_patient_data(patient_data)
+        if warnings:
+            for w in warnings:
+                st.warning(f"⚠️ {w}")
+            st.stop()
+
         # ---------- 📊 INSTANT RISK PANEL ----------
         with st.spinner("🧠 Analyzing patient data..."):
             prediction_data, pred_error = call_api_endpoint("predict", patient_data)
