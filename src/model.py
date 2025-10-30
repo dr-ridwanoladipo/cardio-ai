@@ -365,7 +365,15 @@ def initialize_model() -> bool:
 
 def predict_heart_disease(patient_data: Dict[str, Any]) -> Dict[str, Any]:
     """End-to-end helper: derive features → predict → explain → compare."""
+    patient_data = {k: (0 if v is None else int(v)) for k, v in patient_data.items()}
     enhanced_patient = predictor.compute_auto_fields(patient_data)
+
+    # Guard against None feature_names and columns
+    if predictor.feature_names is None:
+        predictor.feature_names = []
+    enhanced_patient = {k: v for k, v in enhanced_patient.items() if k is not None}
+    predictor.feature_names = [f for f in predictor.feature_names if f is not None]
+
     input_df = pd.DataFrame([enhanced_patient])[predictor.feature_names]
 
     probability, risk_class, clinical_summary = predictor.predict_proba(input_df)
