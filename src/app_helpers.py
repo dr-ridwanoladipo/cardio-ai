@@ -6,21 +6,12 @@ Author: Ridwan Oladipo, MD | AI Specialist
 """
 
 # ── Imports ────────────────────────────────────────────────────────────────────
-import base64
-import json
-import time
 import warnings
-from datetime import datetime
-from io import BytesIO
 from typing import Any, Dict, List
 import os
-import numpy as np
-import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
 import requests
 import streamlit as st
-from plotly.subplots import make_subplots
 
 warnings.filterwarnings("ignore")
 
@@ -249,7 +240,6 @@ def load_custom_css():
     ::-webkit-scrollbar-thumb:hover {
         background: #1d4ed8;
     }
-
 
     /* Content styling */
     details[open] {
