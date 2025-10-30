@@ -1,0 +1,20 @@
+# ── Version control ─────────────────
+.git
+.gitignore
+
+# ── Documentation ──────────────────
+README.md
+
+# ── CI/CD configuration ────────────
+.github/
+task-definition.json
+
+# ── Development artifacts ──────────
+notebooks/
+outputs/
+test/
+utility/
+data/
+
+# ── Training-only scripts ──────────
+src/train.py
