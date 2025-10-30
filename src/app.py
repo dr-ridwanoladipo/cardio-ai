@@ -1,5 +1,3 @@
-# $env:PYTHONPATH="."
-# streamlit run src/app.py
 """
 🩺 Clinical Heart Disease AI - Streamlit Application
 Cardiovascular risk assessment with AI-powered explainability
