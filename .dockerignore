@@ -14,7 +14,8 @@ notebooks/
 outputs/
 test/
 utility/
-data/
+data/heartdisease.csv
+data/heartdisease_cleaned.csv
 
 # ── Training-only scripts ──────────
 src/train.py
