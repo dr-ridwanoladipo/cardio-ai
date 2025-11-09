@@ -470,14 +470,14 @@ def get_sample_patients():
     """Return sample patient data for demonstration"""
     return {
         "Patient A": {
-            "age": 67, "sex": 1, "cp": 0, "trestbps": 160, "chol": 286,
+            "age": 32, "sex": 1, "cp": 2, "trestbps": 110, "chol": 286,
             "fbs": 0, "restecg": 0, "thalach": 108, "exang": 1,
             "oldpeak": 1.5, "slope": 1, "ca": 3, "thal": 2
         },
         "Patient B": {
-            "age": 29, "sex": 1, "cp": 1, "trestbps": 130, "chol": 204,
-            "fbs": 0, "restecg": 0, "thalach": 202, "exang": 0,
-            "oldpeak": 0.0, "slope": 2, "ca": 0, "thal": 2
+            "age": 63, "sex": 1, "cp": 1, "trestbps": 145, "chol": 233,
+            "fbs": 1, "restecg": 1, "thalach": 150, "exang": 0,
+            "oldpeak": 2.3, "slope": 0, "ca": 0, "thal": 2
         },
         "Patient C": {
             "age": 54, "sex": 0, "cp": 2, "trestbps": 108, "chol": 267,
