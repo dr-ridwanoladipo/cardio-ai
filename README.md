@@ -49,57 +49,39 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 ## 🏗️ Medical Workflow Architecture
 
 ```mermaid
-flowchart TB
+flowchart LR
 
-%% ============================
-%%      CLINICAL WORKFLOW
-%% ============================
-subgraph "🩺 Clinical Workflow"
-A[🧑‍⚕️ Patient Inputs\nAge, Symptoms, Vitals, ECG] 
---> B[🖥️ Streamlit Clinical UI\nTriage Interface, Risk Gauge, XAI View]
-B --> C[🧠 FastAPI Backend\nValidation, Routing, Safety Checks]
+%% ------------------------
+%% Clinical Workflow
+%% ------------------------
+subgraph Clinical_Workflow
+A[Patient Inputs\nAge, Symptoms, Vitals, ECG] --> B[Streamlit Clinical UI]
+B --> C[FastAPI Backend\nValidation and Safety Checks]
 end
 
-%% ============================
-%%         AI PIPELINE
-%% ============================
-subgraph "🤖 AI Pipeline"
-C --> D[XGBoost Model\n<200ms Inference]
-C --> E[SHAP Explainer\nFeature Attribution]
-D --> F[Risk Prediction\nLow, Moderate, High]
-E --> G[Top Feature Contributions\nGuideline-aligned Insight]
+%% ------------------------
+%% AI Pipeline
+%% ------------------------
+subgraph AI_Pipeline
+C --> D[XGBoost Model\nFast Inference]
+C --> E[SHAP Explainer\nAttribution]
+D --> F[Risk Prediction]
+E --> G[Feature Contributions]
 end
 
-%% Back to UI
+%% flow back to UI
 F --> B
 G --> B
 
-%% ============================
-%%     AWS PRODUCTION LAYER
-%% ============================
-subgraph "☁️ AWS Production"
-H[ECR Container Registry] --> I[ECS Fargate Task\nAuto-scaling, Secure]
-I --> J[Application Load Balancer\nHTTPS, Health Checks]
+%% ------------------------
+%% AWS Infrastructure
+%% ------------------------
+subgraph AWS_Production
+H[ECR Registry] --> I[ECS Fargate Task]
+I --> J[Application Load Balancer]
+K[Route 53 Domain] --> J
 J --> C
-K[Route 53\ndomain cardio.mednexai.com] --> J
 end
-
-%% ============================
-%%        VISUAL STYLING
-%% ============================
-style A fill:#e0f7fa,stroke:#006064,color:#004d40
-style B fill:#ede7f6,stroke:#5e35b1,color:#311b92
-style C fill:#f3e5f5,stroke:#8e24aa,color:#4a148c
-
-style D fill:#fff3e0,stroke:#ef6c00,color:#e65100
-style E fill:#f1f8e9,stroke:#33691e,color:#1b5e20
-style F fill:#ffe0b2,stroke:#f57c00,color:#e65100
-style G fill:#dcedc8,stroke:#558b2f,color:#33691e
-
-style H fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
-style I fill:#bbdefb,stroke:#1976d2,color:#0d47a1
-style J fill:#90caf9,stroke:#1565c0,color:#0d47a1
-style K fill:#b3e5fc,stroke:#0288d1,color:#01579b
 ```
 
 ---
