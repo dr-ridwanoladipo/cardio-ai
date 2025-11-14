@@ -48,6 +48,7 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 
 ## 🏗️ Medical Workflow Architecture
 
+```mermaid
 flowchart TB
 
 %% ============================
@@ -109,9 +110,8 @@ style H fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1,stroke-width:1.5px
 style I fill:#bbdefb,stroke:#1976d2,color:#0d47a1,stroke-width:1.5px
 style J fill:#90caf9,stroke:#1565c0,color:#0d47a1,stroke-width:1.5px
 style K fill:#b3e5fc,stroke:#0288d1,color:#01579b,stroke-width:1.5px
-
+```
 ---
-
 
 ## 🎬 Interactive Features
 
