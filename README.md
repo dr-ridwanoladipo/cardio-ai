@@ -48,43 +48,67 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 
 ## 🏗️ Medical Workflow Architecture
 
-```mermaid
-graph LR
-    %% -------- Clinical Workflow --------
-    A[🧑‍⚕️ Patient Clinical Inputs\nAge • Symptoms • Vitals • ECG-related features] --> B[Streamlit Clinical UI]
+flowchart TB
 
-    %% UI to Backend
-    B --> C[FastAPI Backend\nValidation • Routing • Safety Checks]
+%% ============================
+%%      CLINICAL WORKFLOW
+%% ============================
+subgraph "🩺 Clinical Workflow (Primary Layer)"
 
-    %% -------- AI Pipeline --------
-    subgraph "AI Pipeline"
-        C --> D[XGBoost Model\n<200ms Inference]
-        C --> E[SHAP Explainer\nFeature-level Attribution]
+A[🧑‍⚕️ Patient Clinical Inputs\nAge • Symptoms • Vitals • ECG-related features] 
+--> B[🖥️ Streamlit Clinical UI\n(Triage Interface • Risk Gauge • XAI View)]
+B --> C[🧠 FastAPI Backend\nValidation • Routing • Safety Checks]
 
-        D --> F[Risk Prediction\nLow • Moderate • High]
-        E --> G[Top Feature Contributions\nGuideline-aligned Insight]
-    end
+end
 
-    %% Back to UI
-    F --> B
-    G --> B
+%% ============================
+%%         AI PIPELINE
+%% ============================
+subgraph "🤖 AI Pipeline (Inference Layer)"
 
-    %% -------- AWS Production Stack --------
-    subgraph "AWS Production"
-        H[ECR Container Registry] --> I[ECS Fargate Task\nAuto-scaling • Secure]
-        I --> J[Application Load Balancer]
-        J --> C
-        J --> B
-        K[Route 53\ncardio.mednexai.com] --> J
-    end
+C --> D[XGBoost Model\n<200ms Inference]
+C --> E[SHAP Explainer\nFeature Attribution]
+D --> F[Risk Prediction\nLow • Moderate • High]
+E --> G[Top Feature Contributions\nGuideline-aligned Insight]
 
-    %% Styling
-    style A fill:#e0f7fa,stroke:#006064,color:#006064
-    style B fill:#ede7f6,stroke:#5e35b1,color:#311b92
-    style D fill:#fff3e0,stroke:#ef6c00,color:#e65100
-    style E fill:#f1f8e9,stroke:#33691e,color:#1b5e20
-    style I fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1
-```
+end
+
+%% Back to UI (closing the loop)
+F --> B
+G --> B
+
+%% ============================
+%%     AWS PRODUCTION LAYER
+%% ============================
+subgraph "☁️ AWS Production (Infrastructure Layer)"
+
+H[ECR Container Registry] --> I[ECS Fargate Task\nAuto-scaling • Secure • Isolated]
+I --> J[Application Load Balancer\nHTTPS • Health Checks]
+J --> C
+K[Route 53\ndomain: cardio.mednexai.com] --> J
+
+end
+
+%% ============================
+%%        VISUAL STYLING
+%% ============================
+
+%% Clinical workflow colors
+style A fill:#e0f7fa,stroke:#006064,color:#004d40,stroke-width:1.5px
+style B fill:#ede7f6,stroke:#5e35b1,color:#311b92,stroke-width:1.5px
+style C fill:#f3e5f5,stroke:#8e24aa,color:#4a148c,stroke-width:1.5px
+
+%% AI pipeline colors
+style D fill:#fff3e0,stroke:#ef6c00,color:#e65100,stroke-width:1.5px
+style E fill:#f1f8e9,stroke:#33691e,color:#1b5e20,stroke-width:1.5px
+style F fill:#ffe0b2,stroke:#f57c00,color:#e65100
+style G fill:#dcedc8,stroke:#558b2f,color:#33691e
+
+%% AWS infrastructure colors
+style H fill:#e3f2fd,stroke:#1e88e5,color:#0d47a1,stroke-width:1.5px
+style I fill:#bbdefb,stroke:#1976d2,color:#0d47a1,stroke-width:1.5px
+style J fill:#90caf9,stroke:#1565c0,color:#0d47a1,stroke-width:1.5px
+style K fill:#b3e5fc,stroke:#0288d1,color:#01579b,stroke-width:1.5px
 
 ---
 
