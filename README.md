@@ -37,7 +37,7 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 ## 🌐 Deployment Options
 - **Live Demos**: Instant access via HuggingFace (UI + API)
 - **Production (On-Demand)**: Fully deployed on AWS ECS Fargate at *cardio.mednexai.com* — **available by request**  
->⚡ **AWS Production**: [cardio.mednexai.com](https://cardio.mednexai.com) — CI/CD-enabled, <10 minutes cold-start (cost-optimized)
+>⚡ **AWS Production**: cardio.mednexai.com — CI/CD-enabled, <10 minutes cold-start (cost-optimized)
 
 ---
 ## 💼 Business Impact
