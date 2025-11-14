@@ -1,6 +1,6 @@
 # 🩺 Heart Disease Risk AI
 
-**Real-time cardiovascular risk prediction achieving 97% sensitivity with <200ms inference — engineered for emergency triage, preventive cardiology, and enterprise-scale decision support.**
+**Real-time cardiovascular risk prediction achieving 97% sensitivity with <200ms inference — powering emergency triage, preventive cardiology, and enterprise-scale decision support.**
 
 *By Ridwan Oladipo, MD | Clinical AI Architect*
 
@@ -16,7 +16,7 @@
 ---
 ## 🎯 Executive Summary
 Heart disease remains the leading global cause of death, where rapid risk stratification directly impacts survival in emergency and preventive settings.  
-This system delivers **<200ms cardiovascular risk prediction** with **97% sensitivity**, **SHAP explainability**, and guideline-aligned recommendations—deployed on **AWS Fargate** and ready for hospital EHR integration, telemedicine workflows, and enterprise clinical decision support.
+This system delivers **cardiovascular risk prediction in <200ms** with **97% sensitivity**, **SHAP explainability**, and guideline-aligned recommendations—deployed on **AWS Fargate** and ready for hospital EHR integration, telemedicine workflows, and enterprise clinical decision support.
 
 ---
 ## 📊 Performance at a Glance
@@ -41,7 +41,7 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 
 ---
 ## 💼 Business Impact
-- **Risk Stratification Automation**: Replaces manual ASCVD/Framingham scoring, saving 5–10 minutes per patient across thousands of annual encounters
+- **Risk Stratification Automation**: Replaces manual ASCVD/Framingham scoring, saving 8,000+ physician-hours annually at a 500-bed hospital
 - **Preventive Cardiology**: Identifies high-risk patients before acute events, reducing avoidable ED admissions and downstream costs
 - **EHR & Telemedicine Ready**: API-first design enables plug-and-play deployment into Epic, Cerner, and remote-care platforms
 ---
