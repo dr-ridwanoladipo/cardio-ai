@@ -49,39 +49,52 @@ This system delivers **<200ms cardiovascular risk prediction** with **97% sensit
 ## 🏗️ Medical Workflow Architecture
 
 ```mermaid
-flowchart LR
+graph LR
 
 %% ------------------------
-%% Clinical Workflow
+%% Linear Clinical → AI Flow
 %% ------------------------
-subgraph Clinical_Workflow
-A[Patient Inputs\nAge, Symptoms, Vitals, ECG] --> B[Streamlit Clinical UI]
+
+A[Patient Inputs\nAge, Symptoms, Vitals, ECG] 
+    --> B[Streamlit Clinical UI]
+
 B --> C[FastAPI Backend\nValidation and Safety Checks]
-end
 
-%% ------------------------
-%% AI Pipeline
-%% ------------------------
-subgraph AI_Pipeline
 C --> D[XGBoost Model\nFast Inference]
-C --> E[SHAP Explainer\nAttribution]
-D --> F[Risk Prediction]
-E --> G[Feature Contributions]
-end
 
-%% flow back to UI
-F --> B
-G --> B
+D --> E[Risk Prediction\nLow, Moderate, High]
+
+E --> F[SHAP Explainability\nKey Feature Contributions]
+
+F --> G[Clinical Recommendations\nGuideline-Aligned]
 
 %% ------------------------
-%% AWS Infrastructure
+%% AI Pipeline Group
 %% ------------------------
-subgraph AWS_Production
-H[ECR Registry] --> I[ECS Fargate Task]
-I --> J[Application Load Balancer]
-K[Route 53 Domain] --> J
-J --> C
+subgraph "AI Pipeline"
+    D
+    E
+    F
 end
+
+%% ------------------------
+%% Clinical Output Group
+%% ------------------------
+subgraph "Clinical Output"
+    G
+    H[Clinician Review]
+    I[Treatment or Follow-up Planning]
+end
+
+G --> H
+H --> I
+
+%% ------------------------
+%% Light Styling (same as your brain tumor project)
+%% ------------------------
+style A fill:#e1f5fe
+style D fill:#fff3e0
+style G fill:#f3e5f5
 ```
 
 ---
