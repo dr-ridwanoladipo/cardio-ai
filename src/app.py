@@ -391,7 +391,7 @@ def main():
 
     with fcol1:
         st.subheader("🔗 Links")
-        st.markdown("[GitHub Repository](https://github.com/dr-ridwanoladipo/cardio-ai-predictor)")
+        st.markdown("[GitHub Repository](https://github.com/dr-ridwanoladipo/cardio-ai#readme)")
         st.markdown(
             "[Kaggle Notebook](https://www.kaggle.com/code/ridwanoladipoai/medical-ai-for-heart-disease-eda-engineering)")
         st.markdown("[API Documentation](https://cardio.mednexai.com/docs)")
