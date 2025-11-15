@@ -99,6 +99,12 @@ style G fill:#f3e5f5
 
 ---
 
+## 📖 Development Pipeline
+- **[EDA & Feature Engineering](https://github.com/dr-ridwanoladipo/cardio-ai/blob/master/notebooks/01_data_eda_features.ipynb)** — clinical variable analysis · risk-factor encoding · feature selection
+- **[Training & Evaluation](https://github.com/dr-ridwanoladipo/cardio-ai/blob/master/notebooks/02_model_train_eval.ipynb)** — XGBoost/ensemble tuning · calibration · AUC/Recall/Precision reporting
+
+---
+
 ## 🎬 Interactive Features
 
 ### **Clinical Interface**
