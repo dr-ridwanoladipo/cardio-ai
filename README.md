@@ -154,6 +154,8 @@ ___
 **CI/CD**: Automated ECS deployments with health checks, rollback, and zero-downtime (~5 min git-push → production)  
 **Explainability**: SHAP top-feature attribution • Guideline-aligned clinical interpretation • Population percentile benchmarking  
 
+**Automated Deployment Workflow** ([View CICD pipeline](https://github.com/dr-ridwanoladipo/cardio-ai/blob/master/.github/workflows/aws-ecs-deploy.yml))
+
 ---
 
 ## 🧪 Clinical Validation & Compliance
