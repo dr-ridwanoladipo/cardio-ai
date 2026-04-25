@@ -83,7 +83,7 @@ def main():
             st.markdown("### ℹ️ About This Tool")
             st.markdown("""
             This AI system predicts coronary artery disease risk using:
-            - **Ensemble** machine learning model
+            - **XGBoost** machine learning model
             - **SHAP** explainable AI 
             - **Clinical guidelines** integration
             - **Population comparisons**
